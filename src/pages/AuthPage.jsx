@@ -16,6 +16,9 @@ import {
   Shield,
   CheckCircle2,
 } from 'lucide-react'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { auth, db } from '../firebase'
 import './AuthPage.css'
 
 const ROLES = [
@@ -91,43 +94,52 @@ export default function AuthPage() {
     return Object.keys(errs).length === 0
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     if (!validateLogin()) return
 
-    // Mock login — check localStorage for existing users
-    const users = JSON.parse(localStorage.getItem('vatsalya_users') || '[]')
-    const user = users.find(u => u.email === formData.email && u.password === formData.password)
-
-    if (user) {
-      localStorage.setItem('vatsalya_auth', JSON.stringify({ ...user, isLoggedIn: true }))
-      navigate(user.role === 'caretaker' ? '/caretaker/dashboard' : '/parent/dashboard')
-    } else {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password)
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid))
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data()
+        localStorage.setItem('vatsalya_auth', JSON.stringify({ ...userData, uid: userCredential.user.uid, isLoggedIn: true }))
+        navigate(userData.role === 'caretaker' ? '/caretaker/dashboard' : '/parent/dashboard')
+      } else {
+        setErrors({ email: 'User profile not found in database' })
+      }
+    } catch (error) {
+      console.error(error)
       setErrors({ email: 'Invalid email or password' })
     }
   }
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
     if (!validateRegister()) return
 
     if (selectedRole === 'caretaker') {
-      // Generate Parent ID and store user
-      const parentId = `VSY-2024-${String(Math.floor(10000 + Math.random() * 90000))}`
-      const user = {
-        ...formData,
-        role: 'caretaker',
-        parentId,
-        createdAt: new Date().toISOString(),
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+        const parentId = `VSY-2024-${String(Math.floor(10000 + Math.random() * 90000))}`
+        
+        const userData = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          role: 'caretaker',
+          parentId,
+          createdAt: new Date().toISOString(),
+        }
+
+        await setDoc(doc(db, 'users', userCredential.user.uid), userData)
+        localStorage.setItem('vatsalya_auth', JSON.stringify({ ...userData, uid: userCredential.user.uid, isLoggedIn: true }))
+
+        navigate('/caretaker/registered', { state: { parentId, name: formData.name } })
+      } catch (error) {
+        setErrors({ email: error.message })
       }
-
-      const users = JSON.parse(localStorage.getItem('vatsalya_users') || '[]')
-      users.push(user)
-      localStorage.setItem('vatsalya_users', JSON.stringify(users))
-      localStorage.setItem('vatsalya_auth', JSON.stringify({ ...user, isLoggedIn: true }))
-
-      // Navigate to caretaker registration success (handled in caretaker flow - Step 3)
-      navigate('/caretaker/registered', { state: { parentId, name: formData.name } })
     } else {
       // Parent registration — navigate to parent-specific registration form
       navigate('/auth/parent-register', {

@@ -1,13 +1,37 @@
 import { Outlet, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { Heart, LogOut, Globe } from 'lucide-react'
+import { auth } from '../firebase'
+import { signOut } from 'firebase/auth'
 import './ParentLayout.css'
 
 export default function ParentLayout() {
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    localStorage.removeItem('vatsalya_auth')
-    navigate('/auth')
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('vatsalya_auth')))
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (!firebaseUser) {
+        localStorage.removeItem('vatsalya_auth')
+        navigate('/auth')
+      } else if (!user || user.role !== 'parent') {
+        navigate('/auth')
+      } else {
+        setUser(prev => ({ ...prev, isLoggedIn: true }))
+      }
+    })
+    return () => unsubscribe()
+  }, [user, navigate])
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      localStorage.removeItem('vatsalya_auth')
+      navigate('/auth')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
   }
 
   return (

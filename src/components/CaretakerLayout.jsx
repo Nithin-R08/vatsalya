@@ -12,23 +12,38 @@ import {
   X,
   Bell
 } from 'lucide-react'
+import { auth } from '../firebase'
+import { signOut } from 'firebase/auth'
 import './CaretakerLayout.css'
 
 export default function CaretakerLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [user] = useState(() => JSON.parse(localStorage.getItem('vatsalya_auth')))
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('vatsalya_auth')))
 
   useEffect(() => {
-    if (!user || !user.isLoggedIn || user.role !== 'caretaker') {
-      navigate('/auth')
-    }
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (!firebaseUser) {
+        localStorage.removeItem('vatsalya_auth')
+        navigate('/auth')
+      } else if (!user || user.role !== 'caretaker') {
+        navigate('/auth')
+      } else {
+        setUser(prev => ({ ...prev, isLoggedIn: true }))
+      }
+    })
+    return () => unsubscribe()
   }, [user, navigate])
 
-  const handleLogout = () => {
-    localStorage.removeItem('vatsalya_auth')
-    navigate('/auth')
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      localStorage.removeItem('vatsalya_auth')
+      navigate('/auth')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
   }
 
   const navLinks = [
