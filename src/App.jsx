@@ -7,6 +7,8 @@ import CaretakerDashboard from './pages/CaretakerDashboard.jsx'
 import CaretakerActivity from './pages/CaretakerActivity.jsx'
 import CaretakerHealth from './pages/CaretakerHealth.jsx'
 import CaretakerSettings from './pages/CaretakerSettings.jsx'
+import ParentLayout from './components/ParentLayout.jsx'
+import ParentDashboard from './pages/ParentDashboard.jsx'
 
 function App() {
   return (
@@ -20,6 +22,10 @@ function App() {
         <Route path="activity" element={<CaretakerActivity />} />
         <Route path="health" element={<CaretakerHealth />} />
         <Route path="settings" element={<CaretakerSettings />} />
+      </Route>
+
+      <Route path="/parent" element={<ParentLayout />}>
+        <Route path="dashboard" element={<ParentDashboard />} />
       </Route>
     </Routes>
   )

@@ -1,0 +1,205 @@
+/* ============================================
+   PARENT DASHBOARD STYLES
+   ============================================ */
+
+.parent-dash {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  height: 100%;
+}
+
+.parent-dash__header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.parent-dash__title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.parent-dash__subtitle {
+  font-size: var(--text-xl);
+  color: var(--text-secondary);
+}
+
+/* --- BUTTONS --- */
+.parent-btn {
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.parent-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+.parent-btn--sos {
+  width: 100%;
+  padding: var(--space-8);
+  background: linear-gradient(135deg, #E63946, #D90429);
+  color: #fff;
+  flex-direction: column;
+  gap: var(--space-4);
+  animation: pulse 2s infinite;
+  box-shadow: 0 12px 48px rgba(230, 57, 70, 0.4);
+}
+
+.parent-btn__icon-wrap {
+  width: 96px;
+  height: 96px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid rgba(255, 255, 255, 0.5);
+}
+
+.parent-btn__content h2 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  letter-spacing: 2px;
+  margin-bottom: var(--space-2);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.parent-btn__content p {
+  font-size: var(--text-lg);
+  opacity: 0.9;
+}
+
+/* --- GRID --- */
+.parent-dash__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.parent-dash__grid .parent-btn {
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4);
+  color: #fff;
+}
+
+.parent-dash__grid h3 {
+  font-family: var(--font-body);
+  font-size: 1.75rem;
+  font-weight: var(--weight-bold);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.parent-btn--primary { background: linear-gradient(135deg, #1A3CFF, #0026E6); }
+.parent-btn--secondary { background: linear-gradient(135deg, #2DC653, #25A244); }
+.parent-btn--tertiary { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+.parent-btn--quaternary { background: linear-gradient(135deg, #F59E0B, #D97706); }
+
+.parent-btn__badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: #E63946;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+}
+
+/* --- VOICE BAR --- */
+.voice-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: var(--space-4) var(--space-6);
+  border-radius: 100px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: auto;
+}
+
+.voice-bar__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.voice-bar__info p {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+}
+
+.voice-bar__info strong {
+  color: var(--text-primary);
+}
+
+.voice-bar__btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(26, 60, 255, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.voice-bar__btn:hover {
+  transform: scale(1.05);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .parent-dash__title { font-size: 2.5rem; }
+  .parent-btn--sos { padding: var(--space-6); }
+  .parent-btn__content h2 { font-size: 2rem; }
+  
+  .parent-dash__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .parent-dash__grid .parent-btn {
+    padding: var(--space-6) var(--space-4);
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-left: var(--space-8);
+  }
+  
+  .parent-dash__grid h3 { font-size: 1.5rem; }
+  
+  .voice-bar {
+    border-radius: var(--radius-lg);
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-4);
+    padding: var(--space-6);
+  }
+  
+  .voice-bar__info {
+    flex-direction: column;
+  }
+}
