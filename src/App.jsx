@@ -5,6 +5,8 @@ import CaretakerRegistered from './pages/CaretakerRegistered.jsx'
 import CaretakerLayout from './components/CaretakerLayout.jsx'
 import CaretakerDashboard from './pages/CaretakerDashboard.jsx'
 import CaretakerActivity from './pages/CaretakerActivity.jsx'
+import CaretakerHealth from './pages/CaretakerHealth.jsx'
+import CaretakerSettings from './pages/CaretakerSettings.jsx'
 
 function App() {
   return (
@@ -16,7 +18,8 @@ function App() {
       <Route path="/caretaker" element={<CaretakerLayout />}>
         <Route path="dashboard" element={<CaretakerDashboard />} />
         <Route path="activity" element={<CaretakerActivity />} />
-        {/* other sub-routes will be added here */}
+        <Route path="health" element={<CaretakerHealth />} />
+        <Route path="settings" element={<CaretakerSettings />} />
       </Route>
     </Routes>
   )

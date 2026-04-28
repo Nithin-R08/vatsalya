@@ -18,7 +18,6 @@ import {
   Menu,
   X,
   Zap,
-  Users,
   Clock,
   CheckCircle2,
 } from 'lucide-react'

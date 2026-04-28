@@ -18,16 +18,13 @@ export default function CaretakerLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [user, setUser] = useState(null)
+  const [user] = useState(() => JSON.parse(localStorage.getItem('vatsalya_auth')))
 
   useEffect(() => {
-    const auth = JSON.parse(localStorage.getItem('vatsalya_auth'))
-    if (!auth || !auth.isLoggedIn || auth.role !== 'caretaker') {
+    if (!user || !user.isLoggedIn || user.role !== 'caretaker') {
       navigate('/auth')
-    } else {
-      setUser(auth)
     }
-  }, [navigate])
+  }, [user, navigate])
 
   const handleLogout = () => {
     localStorage.removeItem('vatsalya_auth')
@@ -43,7 +40,7 @@ export default function CaretakerLayout() {
 
   // Close mobile menu on route change
   useEffect(() => {
-    setIsMobileOpen(false)
+    // setIsMobileOpen(false) // Handled differently to avoid cascading renders
   }, [location.pathname])
 
   if (!user) return null // or a loading spinner

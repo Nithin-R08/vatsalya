@@ -6,9 +6,7 @@ import {
   Copy,
   Check,
   ArrowRight,
-  Heart,
   Shield,
-  Users,
 } from 'lucide-react'
 import './CaretakerRegistered.css'
 

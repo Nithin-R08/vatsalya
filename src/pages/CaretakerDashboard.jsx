@@ -8,7 +8,6 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
-  Calendar,
   ChevronRight,
   TrendingUp,
   Moon,
