@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation, Trans } from 'react-i18next'
 import {
   BellRing,
   PhoneCall,
@@ -15,8 +16,9 @@ import {
 import './ParentDashboard.css'
 
 export default function ParentDashboard() {
+  const { t } = useTranslation()
   const [isVoiceActive, setIsVoiceActive] = useState(false)
-  const [voiceText, setVoiceText] = useState("Listening...")
+  const [voiceText, setVoiceText] = useState("")
   const [isSosActive, setIsSosActive] = useState(false)
   const [sosTimer, setSosTimer] = useState(5)
 
@@ -33,11 +35,11 @@ export default function ParentDashboard() {
   // --- Voice Assistant Simulation ---
   const handleVoiceActivate = () => {
     setIsVoiceActive(true)
-    setVoiceText("Listening...")
+    setVoiceText(t('listening'))
     
     // Simulate AI understanding process
     setTimeout(() => {
-      setVoiceText("Calling Jane...")
+      setVoiceText(t('callingJane'))
     }, 2500)
 
     setTimeout(() => {
@@ -76,8 +78,8 @@ export default function ParentDashboard() {
       animate="show"
     >
       <header className="parent-dash__header">
-        <h1 className="parent-dash__title">Hello, Arthur</h1>
-        <p className="parent-dash__subtitle">How can we help you today?</p>
+        <h1 className="parent-dash__title">{t('greeting')}</h1>
+        <p className="parent-dash__subtitle">{t('subtitle')}</p>
       </header>
 
       {/* EMERGENCY SOS BUTTON */}
@@ -92,8 +94,8 @@ export default function ParentDashboard() {
           <BellRing size={48} color="#fff" />
         </div>
         <div className="parent-btn__content">
-          <h2>EMERGENCY HELP</h2>
-          <p>Tap here to alert Jane immediately</p>
+          <h2>{t('sosBtn')}</h2>
+          <p>{t('sosDesc')}</p>
         </div>
       </motion.button>
 
@@ -106,7 +108,7 @@ export default function ParentDashboard() {
           whileTap={{ scale: 0.98 }}
         >
           <PhoneCall size={36} />
-          <h3>Call Jane</h3>
+          <h3>{t('callJane')}</h3>
         </motion.button>
 
         <motion.button 
@@ -116,8 +118,8 @@ export default function ParentDashboard() {
           whileTap={{ scale: 0.98 }}
         >
           <Pill size={36} />
-          <h3>My Medicines</h3>
-          <span className="parent-btn__badge">1 Due</span>
+          <h3>{t('myMedicines')}</h3>
+          <span className="parent-btn__badge">1 {t('due')}</span>
         </motion.button>
 
         <motion.button 
@@ -127,7 +129,7 @@ export default function ParentDashboard() {
           whileTap={{ scale: 0.98 }}
         >
           <Video size={36} />
-          <h3>Doctor Visit</h3>
+          <h3>{t('doctorVisit')}</h3>
         </motion.button>
 
         <motion.button 
@@ -137,7 +139,7 @@ export default function ParentDashboard() {
           whileTap={{ scale: 0.98 }}
         >
           <HeartPulse size={36} />
-          <h3>Health Stats</h3>
+          <h3>{t('healthStats')}</h3>
         </motion.button>
       </div>
 
@@ -145,7 +147,11 @@ export default function ParentDashboard() {
       <motion.div className="voice-bar" variants={itemVariants}>
         <div className="voice-bar__info">
           <Volume2 size={24} color="#1A3CFF" />
-          <p>Tap the mic and say <strong>"Call Jane"</strong> or <strong>"I need help"</strong></p>
+          <p>
+            <Trans i18nKey="voicePrompt" components={{ 1: <strong /> }}>
+              Tap the mic and say <strong>"Call Jane"</strong> or <strong>"I need help"</strong>
+            </Trans>
+          </p>
         </div>
         <button className="voice-bar__btn" onClick={handleVoiceActivate}>
           <Mic size={32} color="#fff" />
@@ -183,7 +189,7 @@ export default function ParentDashboard() {
                 </div>
               </div>
               <h2 className="voice-overlay__text">{voiceText}</h2>
-              <p className="voice-overlay__subtext">Vatsalya AI is processing...</p>
+              <p className="voice-overlay__subtext">{t('processing')}</p>
             </div>
           </motion.div>
         )}
@@ -205,23 +211,23 @@ export default function ParentDashboard() {
               
               {sosTimer > 0 ? (
                 <>
-                  <h1 className="sos-overlay__title">SOS Triggered</h1>
-                  <p className="sos-overlay__desc">Alerting Jane and Emergency Services in</p>
+                  <h1 className="sos-overlay__title">{t('sosTriggered')}</h1>
+                  <p className="sos-overlay__desc">{t('alerting')}</p>
                   <div className="sos-overlay__timer">{sosTimer}</div>
                   <button className="sos-overlay__cancel" onClick={cancelSos}>
-                    Cancel Alert
+                    {t('cancelAlert')}
                   </button>
                 </>
               ) : (
                 <>
-                  <h1 className="sos-overlay__title">Alert Sent!</h1>
-                  <p className="sos-overlay__desc">Jane has been notified. Calling ambulance...</p>
+                  <h1 className="sos-overlay__title">{t('alertSent')}</h1>
+                  <p className="sos-overlay__desc">{t('alertSentDesc')}</p>
                   <div className="sos-actions">
                     <button className="btn btn-outline sos-btn-action" onClick={() => setIsSosActive(false)}>
-                      <X size={20} /> Dismiss
+                      <X size={20} /> {t('dismiss')}
                     </button>
                     <button className="btn sos-btn-action" style={{ background: '#fff', color: '#E63946' }}>
-                      <PhoneForwarded size={20} /> Speak to Jane
+                      <PhoneForwarded size={20} /> {t('speakToJane')}
                     </button>
                   </div>
                 </>

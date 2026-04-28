@@ -3,12 +3,24 @@ import { useState, useEffect } from 'react'
 import { Heart, LogOut, Globe } from 'lucide-react'
 import { auth } from '../firebase'
 import { signOut } from 'firebase/auth'
+import { useTranslation } from 'react-i18next'
 import './ParentLayout.css'
 
 export default function ParentLayout() {
   const navigate = useNavigate()
-
+  const { t, i18n } = useTranslation()
+  
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('vatsalya_auth')))
+  
+  const languages = ['en', 'hi', 'ta']
+  const langLabels = { en: 'English', hi: 'हिंदी', ta: 'தமிழ்' }
+
+  const handleLangToggle = () => {
+    const currentLang = i18n.language || 'en'
+    const currentIndex = languages.indexOf(currentLang)
+    const nextLang = languages[(currentIndex + 1) % languages.length]
+    i18n.changeLanguage(nextLang)
+  }
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
@@ -46,13 +58,13 @@ export default function ParentLayout() {
         </div>
         
         <div className="parent-topbar__actions">
-          <button className="parent-topbar__btn" aria-label="Change Language">
+          <button className="parent-topbar__btn" onClick={handleLangToggle} aria-label="Change Language">
             <Globe size={24} />
-            <span>English</span>
+            <span>{langLabels[i18n.language] || 'English'}</span>
           </button>
           <button className="parent-topbar__btn text-danger" onClick={handleLogout} aria-label="Logout">
             <LogOut size={24} />
-            <span>Exit</span>
+            <span>{t('exit')}</span>
           </button>
         </div>
       </header>
