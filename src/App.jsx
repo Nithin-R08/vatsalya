@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage.jsx'
 import CaretakerRegistered from './pages/CaretakerRegistered.jsx'
 import CaretakerLayout from './components/CaretakerLayout.jsx'
 import CaretakerDashboard from './pages/CaretakerDashboard.jsx'
+import CaretakerActivity from './pages/CaretakerActivity.jsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       
       <Route path="/caretaker" element={<CaretakerLayout />}>
         <Route path="dashboard" element={<CaretakerDashboard />} />
+        <Route path="activity" element={<CaretakerActivity />} />
         {/* other sub-routes will be added here */}
       </Route>
     </Routes>
