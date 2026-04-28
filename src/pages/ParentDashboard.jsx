@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   BellRing,
   PhoneCall,
@@ -6,11 +7,19 @@ import {
   HeartPulse,
   Mic,
   Video,
-  Volume2
+  Volume2,
+  X,
+  AlertTriangle,
+  PhoneForwarded
 } from 'lucide-react'
 import './ParentDashboard.css'
 
 export default function ParentDashboard() {
+  const [isVoiceActive, setIsVoiceActive] = useState(false)
+  const [voiceText, setVoiceText] = useState("Listening...")
+  const [isSosActive, setIsSosActive] = useState(false)
+  const [sosTimer, setSosTimer] = useState(5)
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -19,6 +28,44 @@ export default function ParentDashboard() {
   const itemVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     show: { opacity: 1, scale: 1, transition: { duration: 0.4 } }
+  }
+
+  // --- Voice Assistant Simulation ---
+  const handleVoiceActivate = () => {
+    setIsVoiceActive(true)
+    setVoiceText("Listening...")
+    
+    // Simulate AI understanding process
+    setTimeout(() => {
+      setVoiceText("Calling Jane...")
+    }, 2500)
+
+    setTimeout(() => {
+      setIsVoiceActive(false)
+    }, 5000)
+  }
+
+  // --- SOS Timer Simulation ---
+  useEffect(() => {
+    let interval = null
+    if (isSosActive && sosTimer > 0) {
+      interval = setInterval(() => {
+        setSosTimer((prev) => prev - 1)
+      }, 1000)
+    } else if (sosTimer === 0) {
+      clearInterval(interval)
+      // Timer finished -> SOS dispatched
+    }
+    return () => clearInterval(interval)
+  }, [isSosActive, sosTimer])
+
+  const handleSosClick = () => {
+    setIsSosActive(true)
+    setSosTimer(5)
+  }
+
+  const cancelSos = () => {
+    setIsSosActive(false)
   }
 
   return (
@@ -39,6 +86,7 @@ export default function ParentDashboard() {
         variants={itemVariants}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
+        onClick={handleSosClick}
       >
         <div className="parent-btn__icon-wrap">
           <BellRing size={48} color="#fff" />
@@ -99,10 +147,90 @@ export default function ParentDashboard() {
           <Volume2 size={24} color="#1A3CFF" />
           <p>Tap the mic and say <strong>"Call Jane"</strong> or <strong>"I need help"</strong></p>
         </div>
-        <button className="voice-bar__btn">
+        <button className="voice-bar__btn" onClick={handleVoiceActivate}>
           <Mic size={32} color="#fff" />
         </button>
       </motion.div>
+
+      {/* --- OVERLAYS --- */}
+
+      {/* Voice Assistant Overlay */}
+      <AnimatePresence>
+        {isVoiceActive && (
+          <motion.div 
+            className="overlay-fullscreen voice-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button className="overlay-close" onClick={() => setIsVoiceActive(false)}>
+              <X size={32} />
+            </button>
+            <div className="voice-overlay__content">
+              <div className="voice-waves">
+                <motion.div 
+                  className="voice-wave"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                />
+                <motion.div 
+                  className="voice-wave voice-wave--delay"
+                  animate={{ scale: [1, 1.8, 1], opacity: [0.3, 0.8, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                />
+                <div className="voice-mic-core">
+                  <Mic size={64} color="#fff" />
+                </div>
+              </div>
+              <h2 className="voice-overlay__text">{voiceText}</h2>
+              <p className="voice-overlay__subtext">Vatsalya AI is processing...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* SOS Overlay */}
+      <AnimatePresence>
+        {isSosActive && (
+          <motion.div 
+            className="overlay-fullscreen sos-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="sos-overlay__content">
+              <div className="sos-overlay__icon-wrap">
+                <AlertTriangle size={80} color="#fff" />
+              </div>
+              
+              {sosTimer > 0 ? (
+                <>
+                  <h1 className="sos-overlay__title">SOS Triggered</h1>
+                  <p className="sos-overlay__desc">Alerting Jane and Emergency Services in</p>
+                  <div className="sos-overlay__timer">{sosTimer}</div>
+                  <button className="sos-overlay__cancel" onClick={cancelSos}>
+                    Cancel Alert
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h1 className="sos-overlay__title">Alert Sent!</h1>
+                  <p className="sos-overlay__desc">Jane has been notified. Calling ambulance...</p>
+                  <div className="sos-actions">
+                    <button className="btn btn-outline sos-btn-action" onClick={() => setIsSosActive(false)}>
+                      <X size={20} /> Dismiss
+                    </button>
+                    <button className="btn sos-btn-action" style={{ background: '#fff', color: '#E63946' }}>
+                      <PhoneForwarded size={20} /> Speak to Jane
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   )
 }
