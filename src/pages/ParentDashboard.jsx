@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation, Trans } from 'react-i18next'
 import {
@@ -16,7 +16,7 @@ import {
 import './ParentDashboard.css'
 
 export default function ParentDashboard() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isVoiceActive, setIsVoiceActive] = useState(false)
   const [voiceText, setVoiceText] = useState("")
   const [isSosActive, setIsSosActive] = useState(false)
@@ -32,19 +32,58 @@ export default function ParentDashboard() {
     show: { opacity: 1, scale: 1, transition: { duration: 0.4 } }
   }
 
-  // --- Voice Assistant Simulation ---
-  const handleVoiceActivate = () => {
-    setIsVoiceActive(true)
-    setVoiceText(t('listening'))
-    
-    // Simulate AI understanding process
-    setTimeout(() => {
-      setVoiceText(t('callingJane'))
-    }, 2500)
+  // --- Voice Assistant (Web Speech API) ---
+  const recognitionRef = useRef(null)
 
-    setTimeout(() => {
-      setIsVoiceActive(false)
-    }, 5000)
+  const handleVoiceActivate = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    
+    if (!SpeechRecognition) {
+      setIsVoiceActive(true)
+      setVoiceText("Voice not supported in this browser.")
+      setTimeout(() => setIsVoiceActive(false), 3000)
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognitionRef.current = recognition
+    recognition.continuous = false
+    recognition.interimResults = true
+    
+    // Set recognition language based on app language
+    if (i18n.language === 'hi') recognition.lang = 'hi-IN'
+    else if (i18n.language === 'ta') recognition.lang = 'ta-IN'
+    else recognition.lang = 'en-US'
+
+    recognition.onstart = () => {
+      setIsVoiceActive(true)
+      setVoiceText(t('listening'))
+    }
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setVoiceText(transcript)
+
+      if (event.results[0].isFinal) {
+        const lower = transcript.toLowerCase()
+        setTimeout(() => {
+          setIsVoiceActive(false)
+          if (lower.includes('help') || lower.includes('emergency') || lower.includes('sos') || lower.includes('मदद') || lower.includes('உதவி')) {
+            handleSosClick()
+          } else if (lower.includes('jane') || lower.includes('call') || lower.includes('कॉल') || lower.includes('அழை')) {
+            alert(t('callingJane'))
+          }
+        }, 1500)
+      }
+    }
+
+    recognition.onerror = (event) => {
+      console.error("Speech error", event.error)
+      setVoiceText("Could not understand. Please try again.")
+      setTimeout(() => setIsVoiceActive(false), 2000)
+    }
+
+    recognition.start()
   }
 
   // --- SOS Timer Simulation ---
